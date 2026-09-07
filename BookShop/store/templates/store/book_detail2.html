@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ book.title }}</title>
+</head>
+<body>
+{% if book.image %}
+            <img class="card-img-top" src="{{ book.image.url }}" alt="Card image cap">
+        {% endif %}
+<h1>{{ book.title }}</h1>
+<p>{{ book.description }}</p>
+<p>{{ book.price }} UAH</p>
+<p>Available:
+{% if book.is_available %}
+    yes
+{% else %}
+    no
+{% endif %}
+</p>
+<p>Amount: {{ book.available_amount }}</p>
+<p>Category:
+    {% if book.category %}
+        {{ book.category.name }}
+    {% else %}
+        No category
+    {% endif %}
+</p>
+<p>Created: {{ book.created_at }}</p>
+</body>
+</html>
