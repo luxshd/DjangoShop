@@ -1,4 +1,5 @@
 <header>
+<header>
     <div class="px-3 py-2 bg-dark text-white">
       <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -8,7 +9,7 @@
 
           <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
             <li>
-              <a href="#" class="nav-link text-secondary">
+              <a href="/" class="nav-link text-secondary">
                 <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#home"></use></svg>
                 Home
               </a>
@@ -48,8 +49,16 @@
         </form>
 
         <div class="text-end">
-          <button type="button" class="btn btn-light text-dark me-2">Login</button>
-          <button type="button" class="btn btn-primary">Sign-up</button>
+          {% if user.is_authenticated %}
+            <span class="me-2">Привет, {{ user.username }}</span>
+            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger">Logout</button>
+            </form>
+          {% else %}
+            <a href="{% url 'users:login' %}" class="btn btn-light text-dark me-2">Login</a>
+            <a href="{% url 'users:register' %}" class="btn btn-primary">Sign-up</a>
+          {% endif %}
         </div>
       </div>
     </div>

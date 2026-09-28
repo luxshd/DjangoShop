@@ -17,7 +17,6 @@ from django.conf.global_settings import TIME_FORMAT
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ SECRET_KEY = 'django-insecure-=*j!^@6=z*yxm2fxxqmdgt$!ga0*6z0_rjdt#ueef4bhzj_-ur
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,9 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'store',
+    'users',
+    'debug_toolbar',
 ]
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'books_list'
+LOGOUT_REDIRECT_URL = 'books_list'
+
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'BookShop.middleware.RequestLogMiddleware',
 ]
 
 ROOT_URLCONF = 'BookShop.urls'
@@ -58,7 +66,7 @@ ROOT_URLCONF = 'BookShop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR, 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,7 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BookShop.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
@@ -82,7 +89,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -102,7 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
@@ -114,12 +119,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -132,3 +135,28 @@ MAILERS = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+INTERNAL_IPS = ['127.0.0.1']
+
+
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {'format': '{asctime} [{levelname}] {name}: {message}', 'style': '{'},
+    },
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'verbose'},
+        'file': {'class': 'logging.FileHandler', 'filename': LOGS_DIR / 'app.log',
+                 'formatter': 'verbose', 'encoding': 'utf-8'},
+    },
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': 'INFO'},
+        'store': {'handlers': ['console', 'file'], 'level': 'DEBUG'},
+        'accounts': {'handlers': ['console', 'file'], 'level': 'DEBUG'},
+        'BookShop': {'handlers': ['console', 'file'], 'level': 'DEBUG'},  # для middleware
+    },
+}

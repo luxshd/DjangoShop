@@ -21,5 +21,8 @@ class Book(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='books/', null=True, blank=True)
 
+    class Meta:
+        permissions = [('can_change_price', 'Может менять цену книги')]
+
     def __str__(self):
         return self.title
